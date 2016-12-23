@@ -8,15 +8,30 @@
 
 <div class="container">
   <!-- Control box start -->
-  <div class="darkened-form-box mb-1 align-right">
-    <!-- Create New Bucket button -->
-    <button type="button" class="btn btn-sm btn-success" aria-label="Left Align" data-toggle="modal" data-target="#delete-bucket-modal">
-      <i class="fa fa-plus" aria-hidden="true"></i>
-      Create New Bucket
-    </button>
+  <div class="darkened-form-box mb-2">
+    <label>Upload to this Bucket:</label>
+    
+    <div class="input-group input-group-sm">
+      <!-- Select file button -->
+      <div class="input-group-btn">
+        <label class="btn btn-default btn-file">Browse...
+          <input class="hidden" name="fileUpload" type="file">
+        </label>
+      </div>
+      <!-- File name text field -->
+      <input class="form-control" disabled="disabled" type="text">
+      <!-- Upload file button -->
+      <div class="input-group-btn">
+        <button type="button" class="btn btn-primary">
+          <i class="fa fa-send" aria-hidden="true"></i>
+          Upload File
+        </button>
+      </div>
+    </div>
   </div>
   <!-- Control box end -->
 
+  <h4><b>Bucket Name</b></h4>
   <table class="table table-hover list-table">
     <!-- Table body start -->
     <tbody>
@@ -24,24 +39,29 @@
         <tr>
           <!-- Bucket name and Information-->
           <td class="col-xs-7">
-            <i class="fa fa-folder" aria-hidden="true"></i>
+            <i class="fa fa-file" aria-hidden="true"></i>
             Marddkss<br>
             <span class="help-text">
-              40 files
+              20.0 MB
             </span>
           </td>
 
           <!-- Bucket operation -->
           <td class="col-xs-3 text-align-right">
-            <!-- Browse button -->
-            <a href="bucket" class="btn btn-primary btn-sm">
-              <i class="fa fa-search" aria-hidden="true"></i>
-              Browse 
+            <!-- Download button -->
+            <a href="#" class="btn btn-primary btn-sm">
+              <i class="fa fa-arrow-down" aria-hidden="true"></i>
+              Download 
             </a>
             <!-- Delete button -->
             <a href="#" class="btn btn-danger btn-sm">
-              <i class="fa fa-trash" aria-hidden="true"></i>
+              <i class="fa fa-remove" aria-hidden="true"></i>
               Delete
+            </a>
+            <!-- Download button -->
+            <a href="#" class="btn btn-default btn-sm">
+              <i class="fa fa-copy" aria-hidden="true"></i>
+              Copy
             </a>
           </td>
         </tr>
@@ -49,6 +69,37 @@
     </tbody>
     <!-- Table body end -->
   </table>
+</div>
+
+<!-- Delete Bucket Modal -->
+<div class="modal fade" id="new-bucket-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <!-- Modal header start -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Create New Bucket</h4>
+      </div>
+
+      <!-- Modal body start -->
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="exampleInputEmail1">Bucket Name</label>
+            <input type="text" class="form-control"  placeholder="Enter Bucket Name">
+          </div>
+        </form>
+      </div>
+      <!-- Modal body end -->
+
+      <!-- Modal footer start -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">Create Bucket</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+      <!-- Modal footer end -->
+    </div>
+  </div>
 </div>
 
 <!-- Create New Bucket Modal -->
@@ -81,36 +132,5 @@
     </div>
   </div>
 </div>
-
-<!-- Delete Bucket Modal -->
-<div class="modal fade" id="delete-bucket-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <!-- Modal header start -->
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Delete Bucket</h4>
-      </div>
-
-      <!-- Modal body start -->
-      <div class="modal-body">
-        <p>Are you sure you want to delete the following bucket?</p>
-        <p>
-          <b>Bucket Name:</b><br>
-          Bucket name
-        </p>
-      </div>
-      <!-- Modal body end -->
-
-      <!-- Modal footer start -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger">Delete Bucket</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-      </div>
-      <!-- Modal footer end -->
-    </div>
-  </div>
-</div>
-
 
 <%- include('partials/footer'); %>
