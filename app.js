@@ -4,9 +4,18 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var fileupload = require('express-fileupload');
+var AWS = require('aws-sdk');
+var s3 = new AWS.S3({
+  accessKeyId: 'B7SUJYA1XB1JX5EYXA58',
+  secretAccessKey: 'h1APjqCBu31eZvMqfGZWPseZkq8vJoxUeFjcGt3n',
+  sslEnabled: true,
+  endpoint: 'https://s3.pranyoto.sisdis.ui.ac.id/',
+  s3ForcePathStyle: true,
+  s3BucketEndpoint: false
+});
 
 var index = require('./routes/index');
-var users = require('./routes/users');
 var bucket = require('./routes/bucket');
 
 var app = express();
@@ -18,14 +27,15 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
+app.use(fileupload());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
+// NOTE: FIX MERGE
+app.use('/', index(s3));
 app.use('/bucket', bucket);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
