@@ -1,3 +1,3 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<% if (message) { %> <h1><%= message %></h1> <% } %>
+<% if (typeof error != 'undefined' && typeof error.status != 'undefined') { %> <h2><%= error.status %></h2> <% } %>
+<% if (typeof error != 'undefined' && typeof error.stack != 'undefined') { %> <pre><%= error.stack %></pre> <% } %>

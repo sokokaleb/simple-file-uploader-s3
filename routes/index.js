@@ -6,45 +6,62 @@ module.exports = (s3) => {
   // Lists all bucket
   router.get('/', (req, res, next) => {
     s3.listBuckets((err, data) => {
-      console.log('Err ' + err);
-      console.log(data);
-      if (err) res.send(err);
-      else res.send(data);
+      if (err) {
+        res.render('error', {
+          error: err,
+          message: 'Error while trying to list buckets.'
+        });
+      }
+      else {
+        res.send(data);
+      }
     });
   });
 
   // Delete bucket
   router.post('/delete-bucket', (req, res, next) => {
     var bucket_name = req.body.bucket;
-    if (bucket_name);
-    else {
-      res.send('Mana bucketnya');
+    if (!bucket_name) {
+      res.render('error', {
+        message: 'Bucket name must be specified.'
+      });
       return ;
     }
     s3.deleteBucket({
       Bucket: bucket_name
     }, (err, data) => {
-      console.log('Err ' + err);
-      console.log(data);
-      res.redirect('/');
+      if (err) {
+        res.render('error', {
+          message: `Error while trying to delete bucket ${bucket_name}`,
+          error: err
+        });
+      } else{
+        res.redirect('/');
+      }
     });
   });
 
   // Create bucket
   router.post('/create-bucket', (req, res, next) => {
     var bucket_name = req.body.bucket;
-    if (bucket_name);
-    else {
-      res.send('Mana bucketnya');
+    if (!bucket_name) {
+      res.render('error', {
+        message: 'Bucket name must be specified.'
+      });
       return ;
     }
     s3.createBucket({
       Bucket: bucket_name,
       ACL: 'public-read-write'
     }, (err, data) => {
-      console.log('Err ' + err);
-      console.log(data);
-      res.redirect('/');
+      if (err) {
+        res.render('error', {
+          message: `Error while trying to create bucket ${bucket_name}`,
+          error: err
+        });
+      } else{
+        res.redirect('/');
+      }
     });
   });
 
@@ -55,10 +72,15 @@ module.exports = (s3) => {
     s3.listObjects({
       Bucket: bucket_name
     }, (err, data) => {
-      console.log('Err: ' + err);
-      console.log(data);
-      if (err) res.send(err);
-      else res.send(data);
+      if (err) {
+        res.render('error', {
+          message: `Error while trying to access bucket '${bucket_name}'.`,
+          error: err
+        });
+      }
+      else {
+        res.send(data);
+      }
     })
   });
 
@@ -71,10 +93,15 @@ module.exports = (s3) => {
       Bucket: bucket_name,
       Key: object_name
     }, (err, data) => {
-      console.log('Err: ' + err);
-      console.log(data);
-      if (err) res.send(err);
-      else res.redirect('/' + bucket_name);
+      if (err) {
+        res.render('error', {
+          message: `Error while trying to access object '${object_name}' from bucket '${bucket_name}'.`,
+          error: err
+        });
+      }
+      else {
+        res.redirect(`/${bucket_name}`);
+      }
     });
   });
 
@@ -83,7 +110,9 @@ module.exports = (s3) => {
     var bucket_name = req.body.bucket;
     var object_name = req.body.object;
     if (!bucket_name || !object_name) {
-      res.send('Cemana nya');
+      res.render('error', {
+        message: 'Both bucket name and object name should be specified.'
+      });
       return ;
     }
 
@@ -91,17 +120,24 @@ module.exports = (s3) => {
       Bucket: bucket_name,
       Key: object_name
     }, (err, data) => {
-      console.log('Err: ' + err);
-      console.log(data);
-      if (err) res.send(err);
-      else res.redirect('/' + bucket_name);
+      if (err) {
+        res.render('error', {
+          message: `Error while trying to delete object '${object_name}' from bucket '${bucket_name}'.`,
+          error: err
+        });
+      }
+      else {
+        res.redirect(`/${bucket_name}`);
+      }
     });
   });
 
   // Create object
   router.post('/create-object', (req, res, next) => {
     if (!req.files || !req.files.object || !req.body.bucket) {
-      res.send('Mana filenya');
+      res.render('error', {
+        message: 'File and target bucket should be specified.'
+      });
       return ;
     }
     var object = req.files.object;
@@ -112,9 +148,15 @@ module.exports = (s3) => {
       Key: object_name,
       Body: object.data
     }, (err, data) => {
-      console.log('Err ' + err);
-      console.log(data);
-      res.redirect('/' + bucket_name);
+      if (err) {
+        res.render('error', {
+          message: `Error while trying to create object '${object_name}' in bucket '${bucket_name}'.`,
+          error: err
+        });
+      }
+      else {
+        res.redirect(`/${bucket_name}`);
+      }
     });
   });
 
@@ -125,7 +167,9 @@ module.exports = (s3) => {
     var destination_bucket_name = req.body.destination_bucket;
     var destination_object_name = req.body.destination_object;
     if (!source_bucket_name || !source_object_name || !destination_bucket_name || !destination_object_name) {
-      res.send('Cemana nya');
+      res.render('error', {
+        message: 'Source target and destination target should be specified.'
+      });
       return ;
     }
 
@@ -134,9 +178,15 @@ module.exports = (s3) => {
       Key: destination_object_name,
       CopySource: source_bucket_name + '/' + source_object_name
     }, (err, data) => {
-      console.log('Err ' + err);
-      console.log(data);
-      res.redirect('/' + source_bucket_name);
+      if (err) {
+        res.render('error', {
+          message: `Error while trying to copy object '${source_object_name}' in bucket '${source_bucket_name}' to object '${destination_object_name}' in bucket '${destination_bucket_name}'.`,
+          error: err
+        });
+      }
+      else {
+        res.redirect(`/${source_bucket_name}`);
+      }
     });
   });
 
