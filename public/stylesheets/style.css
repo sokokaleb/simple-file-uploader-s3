@@ -16,22 +16,30 @@ body {
   margin-top: 0 !important;
 }
 
+/* overrides table */
+table tbody {
+  border-bottom: 1px solid rgb(221,221,221);
+}
+
 
 /* ========================<< UTILITES >>======================== */
 
 .text-align-right {
-  text-align: right;
+  text-align: right !important;
 }
 .mb-1 {
-  margin-bottom: 10px;
+  margin-bottom: 10px !important;
 }
 .mb-2 {
-  margin-bottom: 20px;
+  margin-bottom: 20px !important;
 }
 .mt-1 {
-  margin-top: 10px;
+  margin-top: 10px !important;
 }
 
+.color-gray {
+  color: #999;
+}
 
 /* ========================<< LIST TABLE >>======================== */
 

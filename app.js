@@ -16,8 +16,6 @@ var s3 = new AWS.S3({
 });
 
 var index = require('./routes/index');
-var bucket = require('./routes/bucket');
-
 var app = express();
 
 // view engine setup
@@ -35,7 +33,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // NOTE: FIX MERGE
 app.use('/', index(s3));
-app.use('/bucket', bucket);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

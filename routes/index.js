@@ -1,4 +1,6 @@
 var express = require('express');
+var moment = require('moment');
+var filesize = require('filesize');
 var router = express.Router();
 
 module.exports = (s3) => {
@@ -13,7 +15,16 @@ module.exports = (s3) => {
         });
       }
       else {
-        res.send(data);
+        var locals = {
+          breadcrumb: [
+            {name: 'Home', link: '/'}
+          ],
+          libraries: {
+            moment: moment
+          },
+          data: data
+        };
+        res.render('index', locals);
       }
     });
   });
@@ -79,7 +90,20 @@ module.exports = (s3) => {
         });
       }
       else {
-        res.send(data);
+        var locals = {
+          title: data.Name,
+          bucketName: data.Name,
+          breadcrumb: [
+            {name: 'Home', link: '/'},
+            {name: data.Name, link: '/' + data.Name},
+          ],
+          libraries: {
+            filesize: filesize,
+            moment: moment
+          },
+          data: data
+        };
+        res.render('bucket', locals);
       }
     })
   });

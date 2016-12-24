@@ -1,5 +1,7 @@
 <ol class="breadcrumb">
   <li class="active"><i class="fa fa-home" aria-hidden="true"></i></li>
-  <li><a href="/">Home</a></li>
-  <li><a href="#">bucketName</a></li>
+  <% var breadcrumb = locals.breadcrumb; %>
+  <% for (var i = 0; i < breadcrumb.length; i++) { %>
+    <li><a href='<%= breadcrumb[i].link %>'><%= breadcrumb[i].name %></a></li>
+  <% } %>
 </ol>

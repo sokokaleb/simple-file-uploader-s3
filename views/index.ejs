@@ -1,6 +1,12 @@
 <%- include('partials/header'); %>
 <%- include('partials/navbar'); %>
 
+<!--
+<div class="container mb-1">
+<%= JSON.stringify(locals.data) %>
+</div>
+-->
+
 <div class="container">
   <!-- Breadcrumb -->
   <%- include('partials/breadcrumb'); %>
@@ -8,7 +14,7 @@
 
 <div class="container">
   <!-- Control box start -->
-  <div class="darkened-form-box mb-1 align-right">
+  <div class="darkened-form-box mb-2 align-right">
     <!-- Create New Bucket button -->
     <button type="button" class="btn btn-sm btn-success" aria-label="Left Align" data-toggle="modal" data-target="#delete-bucket-modal">
       <i class="fa fa-plus" aria-hidden="true"></i>
@@ -20,21 +26,24 @@
   <table class="table table-hover list-table">
     <!-- Table body start -->
     <tbody>
-      <% for (var i = 0; i < 5; i++) { %>
+      <% var moment = locals.libraries.moment; %>
+      <% var buckets = locals.data.Buckets; %>
+      <% for (var i = 0; i < buckets.length; i++) { %>
+        <% var bucket = buckets[i]; %>
         <tr>
           <!-- Bucket name and Information-->
           <td class="col-xs-7">
             <i class="fa fa-folder" aria-hidden="true"></i>
-            Marddkss<br>
+            <%= bucket.Name %><br>
             <span class="help-text">
-              40 files
+              Created <%= moment(bucket.CreationDate).format('DD/MM/YYYY HH:mm'); %>
             </span>
           </td>
 
           <!-- Bucket operation -->
           <td class="col-xs-3 text-align-right">
             <!-- Browse button -->
-            <a href="bucket" class="btn btn-primary btn-sm">
+            <a href="<%= '/' + bucket.Name %>" class="btn btn-primary btn-sm">
               <i class="fa fa-search" aria-hidden="true"></i>
               Browse 
             </a>
@@ -49,6 +58,8 @@
     </tbody>
     <!-- Table body end -->
   </table>
+
+  <span class="color-gray">Showing total of <%= buckets.length %> bucket(s).</span>
 </div>
 
 <!-- Create New Bucket Modal -->

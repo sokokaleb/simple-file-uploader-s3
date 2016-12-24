@@ -1,6 +1,12 @@
 <%- include('partials/header'); %>
 <%- include('partials/navbar'); %>
 
+<!--
+<div class="container mb-1">
+<%= JSON.stringify(locals.data) %>
+</div>
+-->
+
 <div class="container">
   <!-- Breadcrumb -->
   <%- include('partials/breadcrumb'); %>
@@ -31,25 +37,31 @@
   </div>
   <!-- Control box end -->
 
-  <h4><b>Bucket Name</b></h4>
+  <h4><b><%= locals.bucketName %></b></h4>
   <table class="table table-hover list-table">
     <!-- Table body start -->
     <tbody>
-      <% for (var i = 0; i < 5; i++) { %>
+      <% var filesize = locals.libraries.filesize; %>
+      <% var moment = locals.libraries.moment; %>
+      <% var objects = locals.data.Contents; %>
+      <% for (var i = 0; i < objects.length; i++) { %>
+        <% var object = objects[i]; %>
+        <% var downloadLink = locals.bucketName + '/' + object.Key %>
         <tr>
           <!-- Bucket name and Information-->
           <td class="col-xs-7">
             <i class="fa fa-file" aria-hidden="true"></i>
-            Marddkss<br>
+            <%= object.Key %><br>
             <span class="help-text">
-              20.0 MB
+              <%= filesize(object.Size) %> &middot;
+              Modified <%= moment(object.LastModified).format('DD/MM/YYYY HH:mm'); %>
             </span>
           </td>
 
           <!-- Bucket operation -->
           <td class="col-xs-3 text-align-right">
             <!-- Download button -->
-            <a href="#" class="btn btn-primary btn-sm">
+            <a href="<%= downloadLink %>" class="btn btn-primary btn-sm">
               <i class="fa fa-arrow-down" aria-hidden="true"></i>
               Download 
             </a>
@@ -69,6 +81,8 @@
     </tbody>
     <!-- Table body end -->
   </table>
+
+  <span class="color-gray">Showing total of <%= objects.length %> object(s).</span>
 </div>
 
 <!-- Delete Bucket Modal -->
