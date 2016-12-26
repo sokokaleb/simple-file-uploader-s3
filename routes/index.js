@@ -183,6 +183,7 @@ module.exports = (s3) => {
 
   // Create object
   router.post('/create-object', (req, res, next) => {
+    console.log(req);
     if (!req.files || !req.files.object || !req.body.bucket) {
       res.render('error', {
         message: 'File and target bucket should be specified.'

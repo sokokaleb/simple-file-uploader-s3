@@ -14,28 +14,86 @@
 
 <div class="container">
   <!-- Control box start -->
-  <div class="darkened-form-box mb-2">
+  <div id="upload-box" class="darkened-form-box mb-2">
     <label>Upload to this Bucket:</label>
     
     <div class="input-group input-group-sm">
       <!-- Select file button -->
       <div class="input-group-btn">
         <label class="btn btn-default btn-file">Browse...
-          <input class="hidden" name="fileUpload" type="file">
+          <input class="hidden" name="fileUpload" data-field="selectFileButton" type="file">
         </label>
       </div>
       <!-- File name text field -->
-      <input class="form-control" disabled="disabled" type="text">
+      <input class="form-control" disabled="disabled" type="text" data-field="selectedFileText">
       <!-- Upload file button -->
       <div class="input-group-btn">
-        <button type="button" class="btn btn-primary">
+        <button type="button" class="btn btn-primary" data-field="uploadFileButton">
           <i class="fa fa-send" aria-hidden="true"></i>
           Upload File
         </button>
       </div>
     </div>
+
+    <!-- Help text -->
+    <div class="mt-1 uhidden">
+      <span data-field="helpText"></span>
+    </div>
   </div>
   <!-- Control box end -->
+
+  <script>
+    // Set listener to upload box
+    var $selectFileButton = $('#upload-box input[data-field="selectFileButton"]');
+    var $uploadFileButton = $('#upload-box button[data-field="uploadFileButton"]');
+    var $selectedFileText = $('#upload-box input[data-field="selectedFileText"]');
+    var $helpText = $('#upload-box span[data-field="helpText"]');
+
+    $selectFileButton.change(function () {
+      // Display file name
+      var fileName = $selectFileButton[0].files[0].name;
+      $selectedFileText.val(fileName);
+
+      // Parse safe file name (replacing space, etc.)
+      var parsedFileName = fileName.replace(/ /g, '_');
+      parsedFileName = parsedFileName.replace(/[^\w .-]/g, '');
+      parsedFileName = parsedFileName.replace(/_+/g, '_');
+
+      // Display file name
+      $helpText.html('Will be saved as <code>' + parsedFileName + '</code>.');
+    });
+
+    $uploadFileButton.click(function () {
+      var fileName = $('#upload-box span[data-field="helpText"] code').text();
+      var fileObject = $selectFileButton[0].files[0];
+      var bucketName = '<%= locals.bucketName %>';
+
+      var formData = new FormData();
+
+      formData.append('object', fileObject, fileName);
+      formData.append('bucket', bucketName);
+      formData.append('name', fileName);
+
+      $.ajax({
+        url: '/create-object',
+        type: 'POST',
+        //contentType: "application/json",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function(data, status, jqXHR) {
+          location.reload();
+        },
+        error: function(jqXHR, status, error) {
+          console.log(jqXHR, status, error);
+          alert('[ERROR] ' + jqXHR.responseText);
+        }
+      });
+
+    });
+
+    // Set listener to upload box upload button
+  </script>
 
   <h4><b><%= locals.bucketName %></b></h4>
   <table class="table table-hover list-table">
@@ -86,7 +144,7 @@
 </div>
 
 <!-- Delete Bucket Modal -->
-<div class="modal fade" id="delete-bucket-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="delete-object-modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <!-- Modal header start -->
@@ -117,7 +175,7 @@
 </div>
 
 <!-- Create New Bucket Modal -->
-<div class="modal fade" id="new-bucket-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="copy-opject-modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <!-- Modal header start -->
@@ -146,5 +204,9 @@
     </div>
   </div>
 </div>
+
+<script>
+
+</script>
 
 <%- include('partials/footer'); %>
