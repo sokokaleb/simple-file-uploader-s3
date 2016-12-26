@@ -31,23 +31,34 @@ module.exports = (s3) => {
 
   // Delete bucket
   router.post('/delete-bucket', (req, res, next) => {
+    console.log('MASUK SINI COOOOOOY!');
     var bucket_name = req.body.bucket;
+    console.log(req.body);
+
     if (!bucket_name) {
-      res.render('error', {
+      /*res.render('error', {
+        message: 'Bucket name must be specified.'
+      });*/
+      res.status(400).json({
         message: 'Bucket name must be specified.'
       });
-      return ;
+      return;
     }
     s3.deleteBucket({
       Bucket: bucket_name
     }, (err, data) => {
       if (err) {
-        res.render('error', {
+        /*res.render('error', {
+          message: `Error while trying to delete bucket ${bucket_name}`,
+          error: err
+        });*/
+        res.status(500).json({
           message: `Error while trying to delete bucket ${bucket_name}`,
           error: err
         });
       } else{
-        res.redirect('/');
+        res.status(200).send('');
+        //res.redirect('/');
       }
     });
   });
@@ -70,7 +81,7 @@ module.exports = (s3) => {
           message: `Error while trying to create bucket ${bucket_name}`,
           error: err
         });
-      } else{
+      } else {
         res.redirect('/');
       }
     });
@@ -124,7 +135,13 @@ module.exports = (s3) => {
         });
       }
       else {
-        res.redirect(`/${bucket_name}`);
+        var dataBuffer = data.Body;
+        res.writeHead(200, {
+          'Content-Type': 'application/force-download',
+          'Content-disposition': 'attachment; filename=' + object_name
+        });
+        res.end(dataBuffer);
+        //res.send(data.Body.data);
       }
     });
   });

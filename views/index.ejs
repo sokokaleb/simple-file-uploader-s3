@@ -144,16 +144,26 @@
     // Set modal delete button handler
     $('#delete-bucket-modal button[data-field="deleteButton"]').off("click");
     $('#delete-bucket-modal button[data-field="deleteButton"]').click(function () {
+      var dataToSend = {
+        bucket: callbackDataJson.bucketName
+      };
+
       $.ajax({
-        url: '/' + callbackDataJson.bucketName,
-        method: 'DELETE',
+        url: '/delete-bucket',
+        type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify(dataToSend),
+        timeout: 5000,
         success: function(data, status, jqXHR) {
           location.reload();
         },
         error: function(jqXHR, status, error) {
           console.log(jqXHR, status, error);
           $('#delete-bucket-modal .alert').removeClass('hidden');
-          $('#delete-bucket-modal .alert').html('<b>Whoops!</b><br>' + jqXHR.status + ' ' + error);
+          $('#delete-bucket-modal .alert').html('<b>Whoops!</b><br>'
+            + jqXHR.status + ' ' + error + '<br>'
+            + jqXHR.responseJSON.message
+          );
         }
       });
     });

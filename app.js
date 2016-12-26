@@ -10,7 +10,7 @@ var s3 = new AWS.S3({
   accessKeyId: 'B7SUJYA1XB1JX5EYXA58',
   secretAccessKey: 'h1APjqCBu31eZvMqfGZWPseZkq8vJoxUeFjcGt3n',
   sslEnabled: true,
-  endpoint: 'https://s3.pranyoto.sisdis.ui.ac.id/',
+  endpoint: 'https://s3.kaleb.sisdis.ui.ac.id/',
   s3ForcePathStyle: true,
   s3BucketEndpoint: false
 });
