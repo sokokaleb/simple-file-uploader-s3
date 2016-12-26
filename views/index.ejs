@@ -78,10 +78,11 @@
 
       <!-- Modal body start -->
       <div class="modal-body">
+        <div class="alert alert-danger hidden" role="alert"><b>Whoops!</b> Error</div>
         <form>
           <div class="form-group">
             <label for="exampleInputEmail1">Bucket Name</label>
-            <input type="text" class="form-control"  placeholder="Enter Bucket Name">
+            <input type="text" class="form-control" data-field="bucketNameText" placeholder="Enter Bucket Name">
           </div>
         </form>
       </div>
@@ -89,7 +90,7 @@
 
       <!-- Modal footer start -->
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Create Bucket</button>
+        <button type="button" class="btn btn-primary" data-field="createButton">Create Bucket</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
       <!-- Modal footer end -->
@@ -109,7 +110,7 @@
 
       <!-- Modal body start -->
       <div class="modal-body">
-        <div class="alert alert-danger hidden" role="alert"><b>Whoops!</b> Makan bedak</div>
+        <div class="alert alert-danger hidden" role="alert"><b>Whoops!</b> Error</div>
         <p>Are you sure you want to delete the following bucket?</p>
         <p>
           <b>Bucket Name:</b><br>
@@ -171,6 +172,33 @@
     // Display modal
     $('#delete-bucket-modal').modal('show');
   }
+
+  // Add listener to `#new-bucket-modal button[data-field="createButton"]`
+  $('#new-bucket-modal button[data-field="createButton"]').click(function () {
+      var dataToSend = {
+        bucket: $('#new-bucket-modal input[data-field="bucketNameText"]').val()
+      };
+
+      console.log(dataToSend);
+      $.ajax({
+        url: '/create-bucket',
+        type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify(dataToSend),
+        timeout: 5000,
+        success: function(data, status, jqXHR) {
+          location.reload();
+        },
+        error: function(jqXHR, status, error) {
+          console.log(jqXHR, status, error);
+          $('#new-bucket-modal .alert').removeClass('hidden');
+          $('#new-bucket-modal .alert').html('<b>Whoops!</b><br>'
+            + jqXHR.status + ' ' + error + '<br>'
+            + jqXHR.responseJSON.message
+          );
+        }
+      });
+    });
 </script>
 
 <%- include('partials/footer'); %>

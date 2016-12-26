@@ -67,22 +67,30 @@ module.exports = (s3) => {
   router.post('/create-bucket', (req, res, next) => {
     var bucket_name = req.body.bucket;
     if (!bucket_name) {
-      res.render('error', {
+      /*res.render('error', {
+        message: 'Bucket name must be specified.'
+      });*/
+      res.status(400).json({
         message: 'Bucket name must be specified.'
       });
-      return ;
+      return;
     }
     s3.createBucket({
       Bucket: bucket_name,
       ACL: 'public-read-write'
     }, (err, data) => {
       if (err) {
-        res.render('error', {
+        /*res.render('error', {
+          message: `Error while trying to create bucket ${bucket_name}`,
+          error: err
+        });*/
+        res.status(500).json({
           message: `Error while trying to create bucket ${bucket_name}`,
           error: err
         });
       } else {
-        res.redirect('/');
+        res.status(200).send('');
+        //res.redirect('/');
       }
     });
   });
