@@ -16,7 +16,7 @@
   <!-- Control box start -->
   <div class="darkened-form-box mb-2 align-right">
     <!-- Create New Bucket button -->
-    <button type="button" class="btn btn-sm btn-success" aria-label="Left Align" data-toggle="modal" data-target="#delete-bucket-modal">
+    <button type="button" class="btn btn-sm btn-success" aria-label="Left Align" data-toggle="modal" data-target="#new-bucket-modal">
       <i class="fa fa-plus" aria-hidden="true"></i>
       Create New Bucket
     </button>
@@ -30,6 +30,10 @@
       <% var buckets = locals.data.Buckets; %>
       <% for (var i = 0; i < buckets.length; i++) { %>
         <% var bucket = buckets[i]; %>
+        <% var callbackData = {
+          bucketName: bucket.Name,
+          creationDate: moment(bucket.CreationDate).format('DD/MM/YYYY HH:mm')
+        }; %>
         <tr>
           <!-- Bucket name and Information-->
           <td class="col-xs-7">
@@ -48,7 +52,7 @@
               Browse 
             </a>
             <!-- Delete button -->
-            <a href="#" class="btn btn-danger btn-sm">
+            <a href="#" class="btn btn-danger btn-sm" onclick="deleteBucketClickHandler('<%= JSON.stringify(callbackData) %>')">
               <i class="fa fa-trash" aria-hidden="true"></i>
               Delete
             </a>
@@ -63,7 +67,7 @@
 </div>
 
 <!-- Create New Bucket Modal -->
-<div class="modal fade" id="new-bucket-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="new-bucket-modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <!-- Modal header start -->
@@ -94,7 +98,7 @@
 </div>
 
 <!-- Delete Bucket Modal -->
-<div class="modal fade" id="delete-bucket-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="delete-bucket-modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <!-- Modal header start -->
@@ -105,17 +109,22 @@
 
       <!-- Modal body start -->
       <div class="modal-body">
+        <div class="alert alert-danger hidden" role="alert"><b>Whoops!</b> Makan bedak</div>
         <p>Are you sure you want to delete the following bucket?</p>
         <p>
           <b>Bucket Name:</b><br>
-          Bucket name
+          <span data-field="bucketName">Bucket name</span>
+        </p>
+        <p>
+          <b>Creation Date:</b><br>
+          <span data-field="creationDate">Bucket name</span>
         </p>
       </div>
       <!-- Modal body end -->
 
       <!-- Modal footer start -->
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger">Delete Bucket</button>
+        <button type="button" class="btn btn-danger" data-field="deleteButton">Delete Bucket</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
       <!-- Modal footer end -->
@@ -123,5 +132,35 @@
   </div>
 </div>
 
+<script>
+  var deleteBucketClickHandler = function(callbackData) {
+    var callbackDataJson = JSON.parse(callbackData);
+
+    // Set modal fields and dismiss alert
+    $('#delete-bucket-modal .alert').addClass('hidden');
+    $('#delete-bucket-modal span[data-field="bucketName"]').html(callbackDataJson.bucketName);
+    $('#delete-bucket-modal span[data-field="creationDate"]').html(callbackDataJson.creationDate);
+
+    // Set modal delete button handler
+    $('#delete-bucket-modal button[data-field="deleteButton"]').off("click");
+    $('#delete-bucket-modal button[data-field="deleteButton"]').click(function () {
+      $.ajax({
+        url: '/' + callbackDataJson.bucketName,
+        method: 'DELETE',
+        success: function(data, status, jqXHR) {
+          location.reload();
+        },
+        error: function(jqXHR, status, error) {
+          console.log(jqXHR, status, error);
+          $('#delete-bucket-modal .alert').removeClass('hidden');
+          $('#delete-bucket-modal .alert').html('<b>Whoops!</b><br>' + jqXHR.status + ' ' + error);
+        }
+      });
+    });
+
+    // Display modal
+    $('#delete-bucket-modal').modal('show');
+  }
+</script>
 
 <%- include('partials/footer'); %>
