@@ -89,7 +89,6 @@
           alert('[ERROR] ' + jqXHR.responseText);
         }
       });
-
     });
 
     // Set listener to upload box upload button
@@ -105,9 +104,14 @@
       <% for (var i = 0; i < objects.length; i++) { %>
         <% var object = objects[i]; %>
         <% var downloadLink = locals.bucketName + '/' + object.Key %>
+        <% var callbackData = {
+          objectName: object.Key,
+          bucketName: locals.bucketName,
+          fileSize: filesize(object.Size)
+        }; %>
         <tr>
           <!-- Bucket name and Information-->
-          <td class="col-xs-7">
+          <td class="col-xs-7" style="word-break: break-all;">
             <i class="fa fa-file" aria-hidden="true"></i>
             <%= object.Key %><br>
             <span class="help-text">
@@ -124,7 +128,7 @@
               Download 
             </a>
             <!-- Delete button -->
-            <a href="#" class="btn btn-danger btn-sm">
+            <a href="#" class="btn btn-danger btn-sm" onclick="deleteBucketClickHandler('<%= JSON.stringify(callbackData) %>')">
               <i class="fa fa-remove" aria-hidden="true"></i>
               Delete
             </a>
@@ -150,23 +154,31 @@
       <!-- Modal header start -->
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Create New Bucket</h4>
+        <h4 class="modal-title" id="myModalLabel">Delete Object</h4>
       </div>
 
       <!-- Modal body start -->
       <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Bucket Name</label>
-            <input type="text" class="form-control"  placeholder="Enter Bucket Name">
-          </div>
-        </form>
+        <div class="alert alert-danger hidden" role="alert"><b>Whoops!</b><br>Unspecified Error</div>
+        <p>Are you sure you want to delete the following object?</p>
+        <p>
+          <b>Object Name:</b><br>
+          <span data-field="objectName">Object name</span>
+        </p>
+        <p>
+          <b>In Bucket:</b><br>
+          <span data-field="bucketName">Bucket name</span>
+        </p>
+        <p>
+          <b>File Size:</b><br>
+          <span data-field="fileSize">File Size</span>
+        </p>
       </div>
       <!-- Modal body end -->
 
       <!-- Modal footer start -->
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Create Bucket</button>
+        <button type="button" class="btn btn-danger" data-field="deleteButton">Delete Object</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
       </div>
       <!-- Modal footer end -->
@@ -174,38 +186,49 @@
   </div>
 </div>
 
-<!-- Create New Bucket Modal -->
-<div class="modal fade" id="copy-opject-modal" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <!-- Modal header start -->
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Create New Bucket</h4>
-      </div>
-
-      <!-- Modal body start -->
-      <div class="modal-body">
-        <form>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Bucket Name</label>
-            <input type="text" class="form-control"  placeholder="Enter Bucket Name">
-          </div>
-        </form>
-      </div>
-      <!-- Modal body end -->
-
-      <!-- Modal footer start -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Create Bucket</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-      </div>
-      <!-- Modal footer end -->
-    </div>
-  </div>
-</div>
 
 <script>
+  var deleteBucketClickHandler = function(callbackData) {
+    var callbackDataJson = JSON.parse(callbackData);
+    console.log(callbackDataJson);
+
+    // Set modal fields and dismiss alert
+    $('#delete-object-modal .alert').addClass('hidden');
+    $('#delete-object-modal span[data-field="objectName"]').html(callbackDataJson.objectName);
+    $('#delete-object-modal span[data-field="bucketName"]').html(callbackDataJson.bucketName);
+    $('#delete-object-modal span[data-field="fileSize"]').html(callbackDataJson.fileSize);
+
+    // Set modal delete button handler
+    $('#delete-object-modal button[data-field="deleteButton"]').off("click");
+    $('#delete-object-modal button[data-field="deleteButton"]').click(function () {
+      var dataToSend = {
+        bucket: callbackDataJson.bucketName,
+        object: callbackDataJson.objectName
+      };
+
+      $.ajax({
+        url: '/delete-object',
+        type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify(dataToSend),
+        timeout: 5000,
+        success: function(data, status, jqXHR) {
+          location.reload();
+        },
+        error: function(jqXHR, status, error) {
+          console.log(jqXHR, status, error);
+          $('#delete-object-modal .alert').removeClass('hidden');
+          $('#delete-object-modal .alert').html('<b>Whoops!</b><br>'
+            + jqXHR.status + ' ' + error + '<br>'
+            + jqXHR.responseJSON.message
+          );
+        }
+      });
+    });
+
+    // Display modal
+    $('#delete-object-modal').modal('show');
+  }
 
 </script>
 

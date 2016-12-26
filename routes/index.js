@@ -76,6 +76,7 @@ module.exports = (s3) => {
       return;
     }
     s3.createBucket({
+      ACL: 'public-read',
       Bucket: bucket_name,
       ACL: 'public-read-write'
     }, (err, data) => {
@@ -194,6 +195,7 @@ module.exports = (s3) => {
     var object_name = req.body.object_name || object.name;
     var bucket_name = req.body.bucket;
     s3.putObject({
+      ACL: 'public-read',
       Bucket: bucket_name,
       Key: object_name,
       Body: object.data
@@ -224,6 +226,7 @@ module.exports = (s3) => {
     }
 
     s3.copyObject({
+      ACL: 'public-read',
       Bucket: destination_bucket_name,
       Key: destination_object_name,
       CopySource: source_bucket_name + '/' + source_object_name
