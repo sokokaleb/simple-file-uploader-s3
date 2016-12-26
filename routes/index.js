@@ -29,11 +29,24 @@ module.exports = (s3) => {
     });
   });
 
+  // Lists all bucket
+  router.get('/list-buckets', (req, res, next) => {
+    s3.listBuckets((err, data) => {
+      if (err) {
+        res.render('error', {
+          error: err,
+          message: 'Error while trying to list buckets.'
+        });
+      }
+      else {
+        res.send(data);
+      }
+    });
+  });
+
   // Delete bucket
   router.post('/delete-bucket', (req, res, next) => {
-    console.log('MASUK SINI COOOOOOY!');
     var bucket_name = req.body.bucket;
-    console.log(req.body);
 
     if (!bucket_name) {
       /*res.render('error', {
@@ -214,15 +227,19 @@ module.exports = (s3) => {
 
   // Copy object between bucket
   router.post('/copy-object', (req, res, next) => {
+    console.log(req.body);
     var source_bucket_name = req.body.source_bucket;
     var source_object_name = req.body.source_object;
     var destination_bucket_name = req.body.destination_bucket;
     var destination_object_name = req.body.destination_object;
     if (!source_bucket_name || !source_object_name || !destination_bucket_name || !destination_object_name) {
-      res.render('error', {
+      /*res.render('error', {
+        message: 'Source target and destination target should be specified.'
+      });*/
+      res.status(400).json({
         message: 'Source target and destination target should be specified.'
       });
-      return ;
+      return;
     }
 
     s3.copyObject({
@@ -232,13 +249,18 @@ module.exports = (s3) => {
       CopySource: source_bucket_name + '/' + source_object_name
     }, (err, data) => {
       if (err) {
-        res.render('error', {
+        /*res.render('error', {
           message: `Error while trying to copy object '${source_object_name}' in bucket '${source_bucket_name}' to object '${destination_object_name}' in bucket '${destination_bucket_name}'.`,
+          error: err
+        });*/
+        res.status(500).json({
+          mmessage: `Error while trying to copy object '${source_object_name}' in bucket '${source_bucket_name}' to object '${destination_object_name}' in bucket '${destination_bucket_name}'.`,
           error: err
         });
       }
       else {
-        res.redirect(`/${source_bucket_name}`);
+        res.status(200).send('');
+        //res.redirect(`/${source_bucket_name}`);
       }
     });
   });
